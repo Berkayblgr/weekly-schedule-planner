@@ -7,7 +7,7 @@ Check out the live application here: **[https://weekly-schedule-mu.vercel.app](h
 
 ## ✨ Key Features
 * **Supabase Authentication**: Secure private sign-up and log-in options. Each account gets an isolated database store.
-* **Database Synchronization**: Real-time reads and writes to Supabase database. Automatically falls back to browser local storage if offline.
+* **Database Synchronization**: Real-time reads and writes to Supabase database. Requires an active internet connection to load and save tasks.
 * **Drag-and-Drop Task Reordering**: Grab any task and slide it up or down to organize your day. Enabled by SortableJS.
 * **Automatic Completed Task Sorting**: Checked tasks automatically snap to the bottom of the list, while unchecked tasks remain at the top. Relative order is preserved inside both lists.
 * **Week-by-Week Planning**: Move forward and backward across weeks (-1 week to +2 weeks navigation) to plan ahead.
