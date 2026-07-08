@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <!-- Calendar body filled with warm cream and deep navy outline -->
+  <rect x="64" y="96" width="384" height="352" rx="48" fill="#FAF7F2" stroke="#1A3038" stroke-width="32"/>
+  <!-- Header line of the calendar -->
+  <path d="M64 192 H448" stroke="#1A3038" stroke-width="32" stroke-linecap="round"/>
+  <!-- Binder rings/loops in slate blue -->
+  <rect x="144" y="48" width="32" height="96" rx="16" fill="#4A6F82"/>
+  <rect x="336" y="48" width="32" height="96" rx="16" fill="#4A6F82"/>
+  <!-- Checkmark representing a completed schedule task in navy -->
+  <path d="M176 310 L232 366 L336 250" fill="none" stroke="#1A3038" stroke-width="40" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

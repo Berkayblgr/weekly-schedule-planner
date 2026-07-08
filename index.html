@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weekly Planner - Organize Your Week</title>
+  <!-- SEO & Meta Tags -->
+  <meta name="description" content="A simple weekly planner and to-do list app to organize your tasks, track your progress, and stay on top of your schedule.">
+  <meta name="theme-color" content="#FAF8F5">
+  
+  <!-- Open Graph / Facebook / LinkedIn -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Weekly Planner - Organize Your Week">
+  <meta property="og:description" content="A simple weekly planner and to-do list app to organize your tasks, track your progress, and stay on top of your schedule.">
+  
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Supabase JS Client SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- SortableJS Library CDN for Drag-and-Drop -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+</head>
+<body>
+  <!-- Auth Screen (Visible when logged out) -->
+  <div class="auth-container" id="auth-screen">
+    <div class="auth-card">
+      <div class="auth-header">
+        <div class="logo-icon">
+          <i data-lucide="calendar-days"></i>
+        </div>
+        <h2>Weekly Planner</h2>
+        <p>Private planner to organize your days and tasks</p>
+      </div>
+      
+      <!-- Tabs to Switch between Login and Signup -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="toggleAuthMode('login')">Log In</button>
+        <button class="auth-tab" id="tab-signup" onclick="toggleAuthMode('signup')">Sign Up</button>
+      </div>
+      
+      <!-- Error Message Banner -->
+      <div class="auth-error-banner" id="auth-error" style="display: none;">
+        <i data-lucide="alert-circle"></i>
+        <span id="auth-error-text">An error occurred.</span>
+      </div>
+      
+      <!-- Success Message Banner -->
+      <div class="auth-success-banner" id="auth-success" style="display: none;">
+        <i data-lucide="check-circle-2"></i>
+        <span id="auth-success-text">Success!</span>
+      </div>
+      
+      <!-- Login & Signup Form -->
+      <form id="auth-form" class="auth-form">
+        <div class="form-group">
+          <label for="auth-email">Email Address</label>
+          <div class="input-icon-wrapper">
+            <i data-lucide="mail" class="input-icon"></i>
+            <input type="email" id="auth-email" required placeholder="name@example.com">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="auth-password">Password</label>
+          <div class="input-icon-wrapper">
+            <i data-lucide="lock" class="input-icon"></i>
+            <input type="password" id="auth-password" required placeholder="Minimum 6 characters">
+          </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-block" id="auth-submit-btn">
+          <span>Log In</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main App Screen (Visible when logged in) -->
+  <div class="app-container" id="app-screen" style="display: none;">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-main">
+        <div class="header-title-area">
+          <div class="logo-icon">
+            <i data-lucide="calendar-days"></i>
+          </div>
+          <div>
+            <h1>Weekly Schedule</h1>
+            <div class="subtitle-wrap">
+              <span class="subtitle">Organize your days, achieve your goals</span>
+              <span class="header-divider">&bull;</span>
+              <span class="user-email" id="user-email-display">loading...</span>
+              <button class="log-out-link" id="log-out-btn" title="Log Out">Log Out</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Week Navigation Bar -->
+        <div class="week-navigation-ctrl">
+          <button class="nav-btn" id="prev-week-btn" title="Previous Week">
+            <i data-lucide="chevron-left"></i>
+            <span>Prev Week</span>
+          </button>
+          <div class="week-indicator">
+            <i data-lucide="calendar"></i>
+            <span id="current-week-display" class="week-date-range">Loading dates...</span>
+            <span id="week-relative-label" class="week-relative-badge this-week">This Week</span>
+          </div>
+          <button class="nav-btn" id="next-week-btn" title="Next Week">
+            <span>Next Week</span>
+            <i data-lucide="chevron-right"></i>
+          </button>
+        </div>
+        
+        <!-- Global Progress Tracker -->
+        <div class="global-progress-card">
+          <div class="progress-info">
+            <span class="progress-label">Week Progress</span>
+            <span class="progress-percentage" id="global-progress-text">0%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-bar" id="global-progress-bar" style="width: 0%"></div>
+          </div>
+          <span class="progress-count" id="global-task-count">0 of 0 tasks completed</span>
+        </div>
+      </div>
+    </header>
+
+
+
+    <!-- About Section -->
+    <section class="about-section">
+      <div class="about-card">
+        <i data-lucide="sparkles" class="about-icon"></i>
+        <p>Plan your week, track your tasks, and stay organized &mdash; all in one simple, private planner that saves your data right in your browser.</p>
+      </div>
+    </section>
+
+    <!-- Main Content: Weekly Grid -->
+    <main class="weekly-grid" id="weekly-grid">
+      <!-- Monday to Sunday cards will be rendered dynamically by app.js -->
+    </main>
+
+    <!-- FAQ Section -->
+    <section class="faq-section">
+      <div class="faq-header">
+        <i data-lucide="help-circle"></i>
+        <h2>Frequently Asked Questions</h2>
+      </div>
+      
+      <div class="faq-accordion">
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span>Where is my data stored?</span>
+            <i data-lucide="chevron-down" class="faq-arrow"></i>
+          </button>
+          <div class="faq-answer">
+            <p>All your data is securely stored inside a personal, dedicated database. Row Level Security policies ensure that only you can read, create, edit, or delete your own data.</p>
+          </div>
+        </div>
+        
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span>Will I lose my data if I clear my browser history/cache?</span>
+            <i data-lucide="chevron-down" class="faq-arrow"></i>
+          </button>
+          <div class="faq-answer">
+            <p>No! Because tasks and notes are now saved to a remote database linked to your account, clearing browser history, cache, or cookies will not delete your saved plans.</p>
+          </div>
+        </div>
+        
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span>Is my data private?</span>
+            <i data-lucide="chevron-down" class="faq-arrow"></i>
+          </button>
+          <div class="faq-answer">
+            <p>Absolutely. Supabase uses standard Row Level Security (RLS) configuration to authenticate each database transaction. Your tasks are isolated to your unique user ID and are completely invisible to any other user.</p>
+          </div>
+        </div>
+        
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span>Can I access my planner from multiple devices?</span>
+            <i data-lucide="chevron-down" class="faq-arrow"></i>
+          </button>
+          <div class="faq-answer">
+            <p>Yes! Since your data is now securely stored in the cloud and tied to your account, you can log in with your email and password from any device — phone, tablet, or computer — and see the same tasks and schedule everywhere.</p>
+          </div>
+        </div>
+        
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span>How far back or ahead can I plan?</span>
+            <i data-lucide="chevron-down" class="faq-arrow"></i>
+          </button>
+          <div class="faq-answer">
+            <p>You can view and edit the previous week, as well as plan up to 2 weeks ahead, using the "Prev Week" and "Next Week" navigation at the top of the page.</p>
+          </div>
+        </div>
+        
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span>Is this free to use?</span>
+            <i data-lucide="chevron-down" class="faq-arrow"></i>
+          </button>
+          <div class="faq-answer">
+            <p>Yes, this planner is completely free to use.</p>
+          </div>
+        </div>
+        
+        <div class="faq-item">
+          <button class="faq-question" aria-expanded="false">
+            <span>What if I forget my password?</span>
+            <i data-lucide="chevron-down" class="faq-arrow"></i>
+          </button>
+          <div class="faq-answer">
+            <p>Password reset isn't available yet, but this feature is planned for a future update. For now, please make sure to remember your password or keep it saved somewhere secure.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <i data-lucide="calendar-days"></i>
+            <span>Weekly Planner</span>
+          </div>
+          <p class="footer-tagline">Organize your days, achieve your goals.</p>
+        </div>
+        
+        <div class="footer-contact">
+          <h3>Get in Touch</h3>
+          <p>Have a question or found an issue? Feel free to reach out.</p>
+          <a href="mailto:berkayblgris@gmail.com" class="footer-email">
+            <i data-lucide="mail"></i>
+            <span>berkayblgris@gmail.com</span>
+          </a>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>Weekly Planner &copy; 2026. Handcrafted with warm cream & navy blue tones.</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Edit Task Modal -->
+  <div class="modal-overlay" id="edit-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Edit Task</h2>
+        <button class="close-btn" id="close-modal-btn" aria-label="Close modal">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+      <form id="edit-task-form" class="modal-form">
+        <input type="hidden" id="edit-task-day">
+        <input type="hidden" id="edit-task-id">
+        
+        <div class="form-group">
+          <label for="edit-task-input">Task Description</label>
+          <input type="text" id="edit-task-input" required placeholder="What needs to be done?">
+        </div>
+        
+        <div class="form-group">
+          <label for="edit-task-priority">Priority</label>
+          <select id="edit-task-priority">
+            <option value="low">Low</option>
+            <option value="medium" selected>Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="cancel-edit-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- App Script -->
+  <script src="app.js"></script>
+</body>
+</html>
