@@ -28,9 +28,6 @@
   <!-- CSS Stylesheet -->
   <link rel="stylesheet" href="styles.css">
   
-  <!-- Supabase JS Client SDK -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
   
@@ -38,62 +35,8 @@
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 </head>
 <body>
-  <!-- Auth Screen (Visible when logged out) -->
-  <div class="auth-container" id="auth-screen">
-    <div class="auth-card">
-      <div class="auth-header">
-        <div class="logo-icon">
-          <i data-lucide="calendar-days"></i>
-        </div>
-        <h2>Weekly Planner</h2>
-        <p>Private planner to organize your days and tasks</p>
-      </div>
-      
-      <!-- Tabs to Switch between Login and Signup -->
-      <div class="auth-tabs">
-        <button class="auth-tab active" id="tab-login" onclick="toggleAuthMode('login')">Log In</button>
-        <button class="auth-tab" id="tab-signup" onclick="toggleAuthMode('signup')">Sign Up</button>
-      </div>
-      
-      <!-- Error Message Banner -->
-      <div class="auth-error-banner" id="auth-error" style="display: none;">
-        <i data-lucide="alert-circle"></i>
-        <span id="auth-error-text">An error occurred.</span>
-      </div>
-      
-      <!-- Success Message Banner -->
-      <div class="auth-success-banner" id="auth-success" style="display: none;">
-        <i data-lucide="check-circle-2"></i>
-        <span id="auth-success-text">Success!</span>
-      </div>
-      
-      <!-- Login & Signup Form -->
-      <form id="auth-form" class="auth-form">
-        <div class="form-group">
-          <label for="auth-email">Email Address</label>
-          <div class="input-icon-wrapper">
-            <i data-lucide="mail" class="input-icon"></i>
-            <input type="email" id="auth-email" required placeholder="name@example.com">
-          </div>
-        </div>
-        
-        <div class="form-group">
-          <label for="auth-password">Password</label>
-          <div class="input-icon-wrapper">
-            <i data-lucide="lock" class="input-icon"></i>
-            <input type="password" id="auth-password" required placeholder="Minimum 6 characters">
-          </div>
-        </div>
-        
-        <button type="submit" class="btn btn-primary btn-block" id="auth-submit-btn">
-          <span>Log In</span>
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <!-- Main App Screen (Visible when logged in) -->
-  <div class="app-container" id="app-screen" style="display: none;">
+  <!-- Main App Screen -->
+  <div class="app-container" id="app-screen">
     <!-- Header -->
     <header class="app-header">
       <div class="header-main">
@@ -105,9 +48,6 @@
             <h1>Weekly Schedule</h1>
             <div class="subtitle-wrap">
               <span class="subtitle">Organize your days, achieve your goals</span>
-              <span class="header-divider">&bull;</span>
-              <span class="user-email" id="user-email-display">loading...</span>
-              <button class="log-out-link" id="log-out-btn" title="Log Out">Log Out</button>
             </div>
           </div>
         </div>
@@ -172,7 +112,7 @@
             <i data-lucide="chevron-down" class="faq-arrow"></i>
           </button>
           <div class="faq-answer">
-            <p>All your data is securely stored inside a personal, dedicated database. Row Level Security policies ensure that only you can read, create, edit, or delete your own data.</p>
+            <p>All your data is stored locally inside your browser's Local Storage. No external servers or user logins are used, keeping your schedule fast and completely private.</p>
           </div>
         </div>
         
@@ -182,7 +122,7 @@
             <i data-lucide="chevron-down" class="faq-arrow"></i>
           </button>
           <div class="faq-answer">
-            <p>No! Because tasks and notes are now saved to a remote database linked to your account, clearing browser history, cache, or cookies will not delete your saved plans.</p>
+            <p>Yes. Because tasks and notes are saved directly in your browser's Local Storage, clearing site data, browser cache, or Local Storage will delete your saved tasks.</p>
           </div>
         </div>
         
@@ -192,17 +132,7 @@
             <i data-lucide="chevron-down" class="faq-arrow"></i>
           </button>
           <div class="faq-answer">
-            <p>Absolutely. Supabase uses standard Row Level Security (RLS) configuration to authenticate each database transaction. Your tasks are isolated to your unique user ID and are completely invisible to any other user.</p>
-          </div>
-        </div>
-        
-        <div class="faq-item">
-          <button class="faq-question" aria-expanded="false">
-            <span>Can I access my planner from multiple devices?</span>
-            <i data-lucide="chevron-down" class="faq-arrow"></i>
-          </button>
-          <div class="faq-answer">
-            <p>Yes! Since your data is now securely stored in the cloud and tied to your account, you can log in with your email and password from any device — phone, tablet, or computer — and see the same tasks and schedule everywhere.</p>
+            <p>Yes! Your schedule never leaves your device. Everything stays saved in your own web browser.</p>
           </div>
         </div>
         
@@ -223,16 +153,6 @@
           </button>
           <div class="faq-answer">
             <p>Yes, this planner is completely free to use.</p>
-          </div>
-        </div>
-        
-        <div class="faq-item">
-          <button class="faq-question" aria-expanded="false">
-            <span>What if I forget my password?</span>
-            <i data-lucide="chevron-down" class="faq-arrow"></i>
-          </button>
-          <div class="faq-answer">
-            <p>Password reset isn't available yet, but this feature is planned for a future update. For now, please make sure to remember your password or keep it saved somewhere secure.</p>
           </div>
         </div>
       </div>
